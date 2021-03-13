@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dado</title>
+    <link rel="stylesheet" href="./bootstrap/bootstrap-5.0.0-beta2-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/estilo.css">
+</head>
+<body ondblclick="tirarDado()" onkeydown="tirarDado()">
+    <header>
+        <h1>Ejercicio Dado</h1>
+    </header>
+    <main>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-5"></div>
+                <div class="col-2"> 
+                    <a type="button" class="btn btn-primary botonTirar" onclick="tirarDado()" >Tirar dado</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5"></div>
+                <div class="col-2 imagenDado" >
+                    <img class="imagenDado" src="" alt="">
+                    <h2 class="resultadoDado"></h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 resultadosAnteriores">
+                    <h2>Tiradas anteriores</h2>
+                    <h3 class="registroResultados"></h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 resultadosAnteriores">
+                    <h2>Estadistica tiradas</h2>
+                    <h3 class="estadisticaResultados"></h3>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="./js/dado.js"></script>
+    <script src="./bootstrap/bootstrap-5.0.0-beta2-dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
