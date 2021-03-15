@@ -3,6 +3,13 @@
 function ejemplo2(evento) {
     alert('Hiciste click en coordenadas: ' + evento.clientX + ', ' + evento.clientY + ' con botón ' + evento.button);
 }
+
+//Lo mismo con un eventListener
+// document.querySelector('.cuadro').addEventListener('mousedown', ejemplo2);
+
+// Lo mismo de otra forma
+// document.querySelector('.cuadro').onmousedown = ejemplo2;
+
 //Nos informa de las coordenadas del cursor DENTRO de "elemento"
 //offsetLeft devuelve el numero de pixeles a la izquierda del elemento actual 
 function ejemplo3(evento) {

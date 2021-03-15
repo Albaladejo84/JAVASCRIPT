@@ -57,6 +57,10 @@ function eliminarElemento(event) {
     }
     if ( event.target.classList.contains( 'agregar-carrito' ) ) {
         console.log( 'curso agregado' )// como vemos no me hace falta crear un selector css para cada curso o un eventlistener para cada uno
+        cursoAgregado = event.target.parentElement.parentElement.innerHTML;
+        
+        console.log(cursoAgregado);
+        document.querySelector('.carrito').appendChild.cursoAgregado.innerHTML;
     }
 }
 

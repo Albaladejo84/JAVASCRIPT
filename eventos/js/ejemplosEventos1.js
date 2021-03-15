@@ -26,5 +26,10 @@ function ejecutarBoton(event) {
 }*/
 
 
+document.querySelector('body').addEventListener('click', ejecutarBoton);
 
+function ejecutarBoton(event){
+let elemento;
+document.querySelector('#demo2').innerHTML = new Date();
+}
 
