@@ -4,9 +4,11 @@ var resultadoPorNumeros = [0,0,0,0,0,0];
 
 function tirarDado(){
     resultado = Math.ceil(6*Math.random());
-    console.log(resultado)
-    AgregarTiradasAnteriores(resultado);
-    actualizarEstadistica(resultado);
+    console.log("./img/animacionDado" + toString(resultado) + ".gif")
+    document.getElementsByClassName("dado")[0].setAttribute("src", (`./img/animacionDado${resultado}.gif`));
+    console.log(resultado);
+    setTimeout(() => {  AgregarTiradasAnteriores(resultado); }, 3000);
+    setTimeout(() => {  actualizarEstadistica(resultado); }, 3000);
     }
 
 function AgregarTiradasAnteriores(resultado){
