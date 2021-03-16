@@ -14,6 +14,8 @@
     var estudiante = new Estudiante();
     var agobio = true
     var registroEstudio = [];
+    var actualizar;
+    var valorFinal;
     console.log(estudiante.estudio);
 
 
@@ -25,6 +27,7 @@
       }
       /* document.getElementsByClassName("estudianteWrapper")[0].style.marginLeft = `${desplazamiento}%`; */
       document.querySelector(".estudianteWrapper").style.marginLeft = `${desplazamiento}%`;
+      document.querySelector(".estudiometro span").innerHTML = estudiante.estudio;
     }
 
     function checkAgobio() {
@@ -37,7 +40,13 @@
         window.alert("Te ha pillado el toro")
       } else if (estudiante.horasDeClase >= 1000) {
         agobio = false;
-        window.alert("Se ha acabado el curso")
+        let total = 0;
+        let media = 0;
+        for (let index = 0; index < registroEstudio.length; index++) {
+          total = total + parseInt(registroEstudio[index]);
+          media = (Math.round((total / registroEstudio.length)*100))/100; 
+        }
+        window.alert(`Has acabado el curso, tu media de estudio fue ${media}`);
       }
       return agobio;
     }
@@ -54,12 +63,14 @@
       clearInterval(actualizar);
       imprimirGrafico();
       estudiante.estudio = 0;
-      console.log(registroEstudio);
+      valorFinal = registroEstudio[registroEstudio.length - 1];
+      registroEstudio = [];
     }
 
     function registrarEstudio() {
       registroEstudio.push(estudiante.estudio);
     }
+
     function imprimirGrafico() {
       //Creamos los array con los datos de los segundos (eje X),y de los colores de las barras. 
       //Hay que crearlos en funcion de la longitud del array registroEstudio.
@@ -120,7 +131,21 @@
       });
 
     }
+    function levantarListeners() {
+      document.addEventListener('keydown', function (e) {
+        e.preventDefault();
+        if (e.keyCode == 32 || e.code == "Space") {
+          estudiante.apretarLosCodos();
+        }
+      });
 
+      document.addEventListener('keyup', function (e) {
+        e.preventDefault();
+        if (e.keyCode == 32 || e.code == "Space") {
+          estudiante.relajarse();
+        }
+      });
+    }
 
   </script>
 
@@ -150,23 +175,9 @@
 </body>
 <script>
   crearAguja();
-  var actualizar = setInterval(actualizarJuego, 100);
-  document.addEventListener('keydown', function (e) {
-    e.preventDefault();
-    if (e.keyCode == 32 || e.code == "Space") {
-      estudiante.apretarLosCodos();
-    }
-  });
-  document.addEventListener('keyup', function (e) {
-    e.preventDefault();
-    if (e.keyCode == 32 || e.code == "Space") {
-      estudiante.relajarse();
-    }
-  });
+  levantarListeners(); 
+  actualizar = setInterval(actualizarJuego, 100);
   setInterval(registrarEstudio, 1000);
-
-
-
 </script>
 <script src="./recursos/package/dist/Chart.min.js"></script>
 
