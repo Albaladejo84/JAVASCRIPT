@@ -13,7 +13,7 @@ function tirarDado(){
 
 function AgregarTiradasAnteriores(resultado){
     registroResultados.push(resultado);
-    registroResultados.sort((a,b) => a -b);
+    registroResultados.sort((a,b) => a - b);
     console.log(registroResultados);
     document.getElementsByClassName("registroResultados")[0].innerHTML = registroResultados;
 }

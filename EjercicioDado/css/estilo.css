@@ -1,21 +1,45 @@
 h1 {
     text-align: center;
-    margin: 3vh;
-    margin-left: 70px;
+    margin: 4vh;
+    margin-left: 15vw;
+}
+h2 {
+    font-size: 3vw;;
+}
+h3 {
+    font-size: 2vw;
+}
+body {
+    background-color: rgb(184, 184, 184);
 }
 .botonTirar {
+    font-size: 2vw;
     text-align: center;
-    margin: 3vh;
-    margin-left: 120px;
+    margin-left: 4vw;
+    width:18vw; 
 }
 .imagenDado {
     text-align: center;
-    margin: 3vh;
+    margin-left: 3vw;
 }
 .row {
     margin: 3vh;
 }
 .dado{
-    width: 500;
+    width: 20vw;
     text-align: center;
+}
+@media only screen and (max-width: 768px){
+    h2 {
+        font-size: 4vw;;
+    }
+    h3 {
+        font-size: 3vw;
+    }
+    .botonTirar {
+        font-size: 3vw;
+        text-align: center;
+        margin-left: 2vw;
+        width:25vw;
+    }
 }
