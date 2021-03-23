@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="tragaperras.css"></link>
+<script type="text/javascript" src="slot.js"></script>
+<script type="text/javascript" src="banca.js"></script>
+<title>TragaperraJS </title>
+</head>
+<body>
+
+<div id="encabezado">TragaperraJS</div>
+
+<div id="maquina">
+  <div id="lineaSlots">
+    <div class="slot">
+    	<img alt="Limón" src="limon.png">
+    </div>
+    <div class="slot">
+    	<img alt="Limón" src="limon.png">
+    </div>
+    <div class="slot">
+    	<img alt="Limón" src="limon.png">
+    </div>
+  </div>
+</div>
+
+<div id="controles">
+	<div id="apuesta" class="iconos">
+		Apuesta: <input  type="text" value="10"/>
+	</div>
+	<div id="spinner" class="iconos" onmouseup="parar()">
+		<span id="textoSpinner" >Girar</span>
+	</div>
+</div>
+
+<div id="banco">
+	<div id="cajetin" class="iconos"><span></span></div>
+	<div id="saldo" class="iconos">Tu saldo es: <span></span></div>
+	<div id="grafico"></div>
+</div>
+
+<div id="creditos" style="font-style: italic;">
+	<div>Todos los derechos reservados por </div>
+	<div class="iconos" onclick="window.open('https://lanyu-estudio.itch.io/', '_self')">LanyuEStudio</div>
+</div>
+
+<script type="text/javascript">
+	
+	/*Asignar a variable "capasSlot" los elementos con clase "slot" de la página
+	*/
+	capasSlot = document.getElementsByClassName("slot");
+	
+	/*Crear un array de longitud igual a capasSlot en variable slotsActuales
+	*/
+	slotsActuales = new Array(capasSlot.length);
+
+	/*Leer apuesta desde input
+	  Debe ser un numero, mayor que cero y menor que el saldo (banco.getSaldo())
+	  Si no se advierte de apuesta no válida
+	  Cambiar cajetin con texto "Apuestas X"
+	  El valor leido debe guardarse en la variable banco.apuesta
+	  Si no es correcto se guarda 0
+	  Se hace return de la variable banco.apuesta
+	*/
+	function getApuesta(){
+		var a = document.querySelector("#apuesta input").value;
+		var correcto = !isNaN(a) && a > 0 && a <= banco.getSaldo();
+		if(!correcto){
+			alert("Apuesta incorrecta");
+			a = 0;
+		}
+		else
+			document.querySelector("#cajetin").textContent = "Apuestas " + a;
+		
+		banco.apuesta = a;
+		
+		return banco.apuesta;
+		/*
+		var apuestaMarcada = document.querySelector("#apuesta input").value;
+		if(!isNaN(apuestaMarcada) && apuestaMarcada <= banco.getSaldo() && apuestaMarcada > 0)
+			cambiarIcono("cajetin", "Apuestas " + banco.apuesta); 
+		else {
+			alert("Apuesta no válida");
+			apuestaMarcada = 0;
+		}
+		banco.apuesta = apuestaMarcada;
+		
+		return banco.getApuesta();
+		*/
+	}
+	
+	/*Cuando hay un cambio de slot se llama al método cargarCapaConSlotItem(capa, item)
+	Este método carga una capa de slot (slotDiv) con la imagen adecuada
+	Los datos para cargar los tiene el objeto slotItem:
+		- slotItem.nombre es la propiedad con el nombre del slotItem;
+		- slotItem.imagen es la propiedad con la ruta a la imagen;
+	Con esto se debe implementar el método debajo
+	Se hará añadiendo/modificando un elemento HTML de tipo img
+	*/
+	function cargarCapaConSlotItem(slotDiv, slotItem) {
+		//vaciarElemento(slotDiv);
+		//var img = document.createElement("img");
+		var img = slotDiv.querySelector("img");
+		img.alt = slotItem.nombre;
+		img.src = slotItem.imagen;
+		//slotDiv.appendChild(img);
+	}
+	
+	/*Hacer una funcion que cargue un slot (cargarSlot(slots, indice)) situado en el indice de un array de slots
+	El cambio se repetirá cada 10ms
+	Hay que almacenar el id del intervalo en el array de ids (idsSpinners.push(id))
+	*/
+	//Gira un slot y gestiona el id del temporizador
+	function girarSlot(slots, indice){
+		var id = setInterval(() => {
+			cargarSlot(slots, indice);
+		}, 10);
+		idsSpinners.push(id);
+		/*var id = setInterval(() => {
+			cargarSlot(slots, indice);
+		}, msGiro);
+		idsSpinners.push(id);
+		*/
+	}
+	
+	/*Se debe detener el giro más antiguo, para eso se cogerá el id más antiguo	de idsSpinners
+	Se comprobará si alguna casilla sigue girando (usar estaGirando())
+	Si no hay más giros se resuelve la apuesta con:
+		getPremioSlots(slotsActuales);
+		banco.resolverApuesta();
+	*/
+	//Detiene el giro mas antiguo
+	function pararGiro(){
+		clearInterval(idsSpinners.shift());
+		if(!estaGirando()){
+			getPremioSlots(slotsActuales);
+			banco.resolverApuesta();
+		}
+			
+		/*
+		clearInterval(idsSpinners.shift());
+		if(!estaGirando()){
+			getPremioSlots(slotsActuales);
+			banco.resolverApuesta();
+		}
+		*/
+	}
+	
+	/*Hacemos una funcion para girar girarSlot(slots, indice) todos los slots (slotsActuales)
+	*/
+	//Gira los slotsActuales
+	function girarLineaSlots() {
+		for(var i = 0; i < slotsActuales.length; i++){
+			girarSlot(slotsActuales, i);
+		}
+		/*
+		operarSlots(slotsActuales, girarSlot);
+		*/
+	}
+	
+	/*Hacer un método que pare cada slot con un tiempo de separación
+	Cada parada debe estar separada de las otras el tiempo: tiempoEntreParadaSlotAdyacente
+	*/
+	//Para los slotsActuales
+	function pararLineaSlots() {
+		var t = tiempoEntreParadaSlotAdyacente;
+		for(var i = 0; i < slotsActuales.length; i++){
+			setTimeout(pararGiro, t);
+			t += tiempoEntreParadaSlotAdyacente;
+		}
+		/*
+		var tiempoEntreParadas = tiempoEntreParadaSlotAdyacente;
+		operarSlots(slotsActuales, function(){
+				setTimeout(pararGiro, tiempoEntreParadas);
+				tiempoEntreParadas += tiempoEntreParadaSlotAdyacente;
+			});
+		*/
+	}
+	
+	/*Se activa / desactiva un elemento HTML
+	Esto se hará añadiendo la clase "disabledElement"
+	*/
+	function activacionDeElemento(elemento, activacion){
+		elemento.className = activacion ? elemento.className.replace("disabledElement", "").trim()
+				: elemento.className + " disabledElement";
+	}
+	
+	//Funciones Spinner
+	/*Si el saldo es cero se hace alert y debe finalizarse el juego (fin()) antes de girar
+	Si no se está girando y la apuesta es válida (estaGirando()) se puede girar
+	Primero se apuesta lo marcado (banco.apostar(getApuesta()))
+	Se giran las casillas (girarLineaSlots()) y el botón de giro debe poner "GIRANDO"
+	Al girar se activa la máquina si estuviera desactivada (por giro de una casilla)
+	Y deben tener el estilo original (fondo blanco)
+	*/
+	function girar() {
+		if(banco.getSaldo() <= 0){
+			alert("Game Over");
+			fin();
+		}
+		else{
+			if(!estaGirando() && getApuesta() > 0){
+				girarLineaSlots();
+				banco.apostar(banco.getApuesta());
+				document.querySelector("#spinner").textContent = "GIRANDO";
+				activacionDeElemento(document.querySelector("#maquina"), true);
+				for(let i = 0; i < capasSlot.length; i++){
+					capasSlot[i].style = null;
+				}
+			}
+		}
+		/*
+		if(banco.getSaldo() == 0){
+			alert("Has perdido todo tu dinero. Vuelve a intentarlo.");
+			fin();
+		}
+		else if(giroAceptado()){
+			girarLineaSlots();
+			cambiarIcono("spinner", "Girando", "refresh");
+			activarElemento(document.querySelector("#maquina"), true);
+			resetSlots();
+		}*/
+	}
+	
+	//Añadir listener mousedown con funcion girar a elemento "#spinner"
+	//Se hará añadiendo la funcion girar al maneajador usando el atributo correspondiente del DOM
+	document.querySelector("#spinner").onmousedown = girar;
+	/*
+	var spinner = document.getElementById("spinner");
+	spinner.addEventListener("mousedown", girar);
+	*/
+	
+	/*Si está girando se paran los giros (pararLineaSlots(capasSlot))
+	Se desactiva el boton de giro para no poder pulsarse de nuevo
+	Se usa el metodo creado anteriormente
+	*/
+	function parar() {
+		if(estaGirando()){
+			pararLineaSlots(capasSlot);
+			activacionDeElemento(document.querySelector("#spinner"), false);
+		}
+		/*
+		if(estaGirando()){
+			pararLineaSlots(capasSlot);
+			activarElemento(spinner, false);
+		}
+		*/
+	}
+	
+	//Añadir listener mouseup con funcion parar() a elemento "#spinner"
+	//Se hará añadiendo un atributo directamente al HTML de la página
+	
+	//Funciones Saldo
+	/*Sobreescribir una funcion que nos informe de los cambios en el saldo
+	Los saldos (actual en posicion 0 y más antiguos en sucesivos) estan en el array banco.saldos
+	Se pueden todos con banco.getSaldoHistorico(indice) => el actual es indice 0 = banco.getSaldo()
+	Cada vez que hay un cambio en el saldo se llama a la funcion notificarSaldo()
+	El cajetín (elemento #cajetin) debe informar de las ganancias poniendo "Ganas X"
+	Se debe actualizar la capa saldo con el saldo actual (cambiar contenido span)
+	Para actualizar ese contenido debe hacerse obteniendo el único elemento span dentro de saldo con un querySelector
+	Si se alcanza o supera 100 unidades, se acaba el juego, se hace alert y se finaliza (fin())
+	Debe actualizarse el historial (mostrarHistorial())
+	Debe activarse el boton de giro de nuevo y poner el texto "Girar"
+	*/
+	notificarSaldo = function(){
+		var ganancia = banco.getSaldoHistorico(0) - banco.getSaldoHistorico(1);
+		mostrarHistorial();
+		if(ganancia >= 0){
+			document.querySelector("#cajetin").textContent = "Ganas " + ganancia;
+		}
+		document.querySelector("#saldo span").textContent = banco.getSaldo();
+		document.querySelector("#spinner").textContent = "Girar";
+		activacionDeElemento(document.querySelector("#spinner"), true);
+		if(banco.getSaldo() >= 100){
+			alert("GANASTE");
+			fin();
+		}
+		/*
+		if(banco.saldos.length > 1){
+			var ganancia = banco.getSaldo() - banco.getSaldoHistorico(1);
+			if(ganancia >= 0){
+				if(banco.getSaldo() >= 100){
+					alert("Has roto la banca. Fin del Juego");
+					fin();
+				}
+				cambiarIcono("cajetin", "Ganas " + ganancia);
+			}
+		}
+		cambiarIcono("saldo", banco.getSaldo());
+		mostrarHistorial();
+		activarElemento(spinner, true);
+		cambiarIcono("spinner", "Girar", "star");
+		*/
+	}
+	
+	/*Rellena el historial
+	Cada cambio de saldo debe añadirse
+	Se puede vaciar y rellenar con todos en vez de actualizarse, pero se mostrarán sólo los 15 últimos saldos si hubiera más
+	Se mostrara de más antiguo a más nuevo de izquierda a derecha
+	Cada saldo debe:
+		- Añadirse una capa de clase "celdaGrafico" que será la celda a rellenar y añadir a elemento "grafico"
+		- Añadir una capa a la celda con el valor texto del saldo redondeado (sólo enteros) y clase "valorSaldo"
+		- Añadir una capa a la celda con la altura proporcional al saldo que hay que pintar y clase "barraGrafico"
+		- 100 unidades equivalen a una altura del 90% de la celda
+		- En funcion de si el saldo es negativo o positivo se usará un color:
+			* Positivo: .valorPositivo / .barraPositivo
+			* Negativo: .valorNegativo / .barraNegativo
+	*/
+	function mostrarHistorial(){
+		var grafico = document.querySelector("#grafico");
+		while(grafico.firstChild){
+			grafico.removeChild(grafico.firstChild);
+		}
+		var inicio = banco.saldos.length > 15 ? 14 : banco.saldos.length - 1;
+		for(var i = inicio; i >= 0; i--){
+			var celda = document.createElement("div");
+			celda.className = "celdaGrafico";
+			var s = banco.getSaldoHistorico(i);
+			var diferencia = s - (banco.getSaldoHistorico(i + 1) || 0);
+			var variante;
+			if(diferencia >= 0)
+				variante = "Positivo";
+			else
+				variante = "Negativo";
+			var valor = document.createElement("div");
+			valor.className = "valorSaldo valor" + variante;
+			valor.textContent = Math.round(s);
+			var barra = document.createElement("div");
+			barra.className = "barraGrafico barra" + variante;
+			barra.style.height = s*.9 + "%";
+			celda.appendChild(valor);
+			celda.appendChild(barra);
+			grafico.appendChild(celda);
+		}
+		/*var grafico = document.getElementById("grafico");
+		vaciarElemento(grafico);
+		var inicio = banco.saldos.length > limiteSaldoParaMostrar ? limiteSaldoParaMostrar - 1 : banco.saldos.length - 1; 
+		for(var i = inicio; i >= 0 ; i--){
+			var signo = banco.getSaldoHistorico(i) - banco.getSaldoHistorico(i + 1) < 0 ? "Negativo" : "Positivo";
+			var celda = document.createElement("div");
+			celda.className = "celdaGrafico";
+			var valor = document.createElement("div");
+			valor.className = "valorSaldo saldo" + signo;
+			valor.textContent = Math.round(banco.getSaldoHistorico(i));
+			celda.appendChild(valor);
+			var barra = document.createElement("div");
+			barra.className = "barraGrafico barra" + signo;
+			barra.style.height = ((banco.getSaldoHistorico(i) < 100? banco.getSaldoHistorico(i) : 100)*.9) + "%";
+			celda.appendChild(barra);
+			grafico.appendChild(celda);
+		}*/
+	}
+		
+	/*Impide continuar jugando
+	Debe eliminar el botón de giro y desactivar #maquina
+	*/
+	function fin(){
+		document.getElementById("controles").removeChild(document.querySelector("#spinner"));
+		activacionDeElemento(document.querySelector("#maquina"), false);
+		/*
+		document.getElementById("controles").removeChild(document.getElementById("spinner"));
+		activarElemento(document.querySelector("#maquina"), false);
+		*/
+	}
+	
+	//Inicializar los componentes
+	
+	/*Los slots deben poder permitir girar un solo slot pero sólo una vez antes de girar todos de nuevo
+	Si se hace ese giro se realiza otra apuesta, solo que los otros dos sabemos el resultado
+	Para girar un solo slot se usará girarSlot(slotsActuales, indice)
+	Añadir listener para mousedown en cada elemento slot para que gire sólo ese slot
+	Se debe hacer con un for, pero en vez de usar var para controlarlo debe ser un let
+	Ese listener hará lo siguiente:
+		- Apostar al giro en las condiciones marcadas
+		- Girar el slot pinchado
+		- Colorear de amarillo el slot que se pinchó
+	Añadir otro listener a mouseup que haga:
+		- Parar el giro con pararGiro()
+		- Desactivar todos los slots para evitar girar de nuevo
+	*/
+	for(let i = 0; i < capasSlot.length; i++){
+		capasSlot[i].onmousedown = function(event){
+			banco.apostar(getApuesta());
+			girarSlot(slotsActuales, i);
+			event.currentTarget.style.backgroundColor = "yellow"; 
+		};
+		capasSlot[i].onmouseup = function(event){
+			pararGiro();
+			activacionDeElemento(document.querySelector("#maquina"), false);
+		};
+	}
+	/*
+	for(let i = 0; i < capasSlot.length; i++){
+		capasSlot[i].onmousedown = function(event){
+			banco.apostar(getApuesta());
+			girarSlot(slotsActuales, i);
+			event.currentTarget.style.background = "yellow";
+		};
+		capasSlot[i].onmouseup = function(event){
+			pararGiro();
+			activarElemento(document.querySelector("#maquina"), false);
+		};
+	}
+	*/
+	
+	function resetSlots(){
+		for(var i = 0; i < capasSlot.length; i++){
+			capasSlot[i].style = null;
+		}
+	}
+	
+	//Dejar al final
+	banco = new Banca(50);
+	notificarSaldo();
+	
+	;
+</script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="tragaperras.css">
+	</link>
+	<script type="text/javascript" src="slot.js"></script>
+	<script type="text/javascript" src="banca.js"></script>
+	<title>TragaperraJS </title>
+</head>
+
+<body>
+
+	<div id="encabezado">TragaperraJS</div>
+
+	<div id="maquina">
+		<div id="lineaSlots">
+			<div class="slot">
+				<img alt="Limón" src="limon.png">
+			</div>
+			<div class="slot">
+				<img alt="Limón" src="limon.png">
+			</div>
+			<div class="slot">
+				<img alt="Limón" src="limon.png">
+			</div>
+		</div>
+	</div>
+
+	<div id="controles">
+		<div id="apuesta" class="iconos">
+			Apuesta: <input type="text" value="10" />
+		</div>
+		<div id="spinner" class="iconos">
+			<span id="textoSpinner">Girar</span>
+		</div>
+	</div>
+
+	<div id="banco">
+		<div id="cajetin" class="iconos"><span></span></div>
+		<div id="saldo" class="iconos">Tu saldo es: <span></span></div>
+		<div id="grafico"></div>
+	</div>
+
+	<div id="creditos" style="font-style: italic;">
+		<div>Todos los derechos reservados por </div>
+		<div class="iconos" onclick="window.open('https://lanyu-estudio.itch.io/', '_self')">LanyuEStudio</div>
+	</div>
+
+	<script type="text/javascript">
+
+		/*Asignar a variable "capasSlot" los elementos con clase "slot" de la página
+		*/
+
+
+		var capasSlot = document.getElementsByClassName("slot");
+
+
+		/*Crear un array de longitud igual a capasSlot en variable slotsActuales
+		*/
+		var slotsActuales = new Array(capasSlot.length);
+
+		/*Leer apuesta desde input
+		  Debe ser un numero, mayor que cero y menor que el saldo (banco.getSaldo())
+		  Si no se advierte de apuesta no válida
+		  Cambiar cajetin con texto "Apuestas X"
+		  El valor leido debe guardarse en la variable banco.apuesta
+		  Si no es correcto se guarda 0
+		  Se hace return de la variable banco.apuesta
+		*/
+
+		document.getElementById("apuesta").children[0].setAttribute("pattern", "[0-9]{1,3}");
+
+		function getApuesta() {
+			var apuesta = document.querySelector('#apuesta input');
+			if (apuesta != isNaN(apuesta) && apuesta > 0 && apuesta < banco.getSaldo()) {
+				banco.apuesta = apuesta;
+			} else {
+				alert('apuesta incorrecta');
+				correcto = false;
+				banco.apuesta = 0;
+			}
+			document.querySelector('#cajetin').children[0].innerHTML = "Apuestas: " + banco.apuesta;
+			return banco.apuesta;
+		}
+
+		/*Cuando hay un cambio de slot se llama al método cargarCapaConSlotItem(capa, item)
+		Este método carga una capa de slot (slotDiv) con la imagen adecuada
+		Los datos para cargar los tiene el objeto slotItem:
+			- slotItem.nombre es la propiedad con el nombre del slotItem;
+			- slotItem.imagen es la propiedad con la ruta a la imagen;
+		Con esto se debe implementar el método debajo
+		Se hará añadiendo/modificando un elemento HTML de tipo img
+		*/
+		function cargarCapaConSlotItem(slotDiv, slotItem) {
+			slotDiv.querySelector('img').src = slotItem.imagen;
+			slotDiv.querySelector('img').alt = slotItem.nombre;
+		}
+
+		/*Hacer una funcion que cargue un slot (cargarSlot(slots, indice)) situado en el indice de un array de slots
+		El cambio se repetirá cada 10ms
+		Hay que almacenar el id del intervalo en el array de ids (idsSpinners.push(id))
+		*/
+		function girarSlot(slots, indice) {
+			var id = setInterval(cargarSlot(slots, indice), 10);
+			idsSpinners.push(id);
+		}
+		/*Se debe detener el giro más antiguo, para eso se cogerá el id más antiguo	de idsSpinners
+		Se comprobará si alguna casilla sigue girando (usar estaGirando())
+		Si no hay más giros se resuelve la apuesta con:
+			getPremioSlots(slotsActuales);
+			banco.resolverApuesta();
+		*/
+		function pararGiro() {
+			clearInterval(idsSpinners.shift());
+			if (!estaGirando()) {
+				getPremioSlots(slotsActuales);
+				banco.resolverApuesta();
+			}
+		}
+
+		/*Hacemos una funcion para girar girarSlot(slots, indice) todos los slots (slotsActuales)
+		*/
+		function girarLineaSlots() {
+
+		}
+
+		/*Hacer un método que pare cada slot con un tiempo de separación
+		Cada parada debe estar separada de las otras el tiempo: tiempoEntreParadaSlotAdyacente
+		*/
+		function pararLineaSlots() {
+
+		}
+
+		/*Se activa / desactiva un elemento HTML
+		Esto se hará añadiendo la clase "disabledElement"
+		*/
+		function activacionDeElemento(elemento, activacion) {
+
+		}
+
+		/*Si el saldo es cero se hace alert y debe finalizarse el juego (fin()) antes de girar
+		Si no se está girando y la apuesta es válida (estaGirando()) se puede girar
+		Primero se apuesta lo marcado (banco.apostar(getApuesta()))
+		Se giran las casillas (girarLineaSlots()) y el botón de giro debe poner "GIRANDO"
+		Al girar se activa la máquina si estuviera desactivada (por giro de una casilla)
+		Y deben tener el estilo original (fondo blanco)
+		*/
+		function girar() {
+
+		}
+
+		/*Añadir listener mousedown con funcion girar a elemento "#spinner"
+		Se hará añadiendo la funcion girar al maneajador usando el atributo correspondiente del DOM
+		*/
+
+
+		/*Si está girando se paran los giros (pararLineaSlots(capasSlot))
+		Se desactiva el boton de giro para no poder pulsarse de nuevo
+		Se usa el metodo creado anteriormente
+		*/
+		function parar() {
+
+		}
+
+		/*Añadir listener mouseup con funcion parar() a elemento "#spinner"
+		Se hará añadiendo un atributo directamente al HTML de la página
+		*/
+
+
+		/*Sobreescribir una funcion que nos informe de los cambios en el saldo
+		Los saldos (actual en posicion 0 y más antiguos en sucesivos) estan en el array banco.saldos
+		Se pueden todos con banco.getSaldoHistorico(indice) => el actual es indice 0 = banco.getSaldo()
+		Cada vez que hay un cambio en el saldo se llama a la funcion notificarSaldo()
+		El cajetín (elemento #cajetin) debe informar de las ganancias poniendo "Ganas X"
+		Se debe actualizar la capa saldo con el saldo actual (cambiar contenido span)
+		Para actualizar ese contenido debe hacerse obteniendo el único elemento span dentro de saldo con un querySelector
+		Si se alcanza o supera 100 unidades, se acaba el juego, se hace alert y se finaliza (fin())
+		Debe actualizarse el historial (mostrarHistorial())
+		Debe activarse el boton de giro de nuevo y poner el texto "Girar"
+		*/
+		notificarSaldo = function () {
+
+		}
+
+		/*Rellena el historial
+		Cada cambio de saldo debe añadirse
+		Se puede vaciar y rellenar con todos en vez de actualizarse, pero se mostrarán sólo los 15 últimos saldos si hubiera más
+		Se mostrara de más antiguo a más nuevo de izquierda a derecha
+		Cada saldo debe:
+			- Añadirse una capa de clase "celdaGrafico" que será la celda a rellenar y añadir a elemento "grafico"
+			- Añadir una capa a la celda con el valor texto del saldo redondeado (sólo enteros) y clase "valorSaldo"
+			- Añadir una capa a la celda con la altura proporcional al saldo que hay que pintar y clase "barraGrafico"
+			- 100 unidades equivalen a una altura del 90% de la celda
+			- En funcion de si el saldo es negativo o positivo se usará un color:
+				* Positivo: .valorPositivo / .barraPositivo
+				* Negativo: .valorNegativo / .barraNegativo
+		*/
+		function mostrarHistorial() {
+
+		}
+
+		/*Impide continuar jugando
+		Debe eliminar el botón de giro y desactivar #maquina
+		*/
+		function fin() {
+
+		}
+
+		/*Los slots deben poder permitir girar un solo slot pero sólo una vez antes de girar todos de nuevo
+		Si se hace ese giro se realiza otra apuesta, solo que los otros dos sabemos el resultado
+		Para girar un solo slot se usará girarSlot(slotsActuales, indice)
+		Añadir listener para mousedown en cada elemento slot para que gire sólo ese slot
+		Se debe hacer con un for, pero en vez de usar var para controlarlo debe ser un let
+		Ese listener hará lo siguiente:
+			- Apostar al giro en las condiciones marcadas
+			- Girar el slot pinchado
+			- Colorear de amarillo el slot que se pinchó
+		Añadir otro listener a mouseup que haga:
+			- Parar el giro con pararGiro()
+			- Desactivar todos los slots para evitar girar de nuevo
+		*/
+		//for(let i = 0; i < capasSlot.length; i++){
+
+		//}
+
+		//Dejar al final: NO TOCAR
+		banco = new Banca(50);
+		notificarSaldo();
+	</script>
+</body>
+
+</html>
